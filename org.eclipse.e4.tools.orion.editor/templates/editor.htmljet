@@ -1,0 +1,45 @@
+<%@ jet package="org.eclipse.e4.tools.orion.editor.builder" class="OrionEditorTemplate" %>
+<% OrionEditorModel model = (OrionEditorModel)argument; %>
+<!DOCTYPE html> 
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<title>Theme CSS editor</title>
+<style>
+#editor {
+	//border: 1px solid teal;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	//margin: 20px;
+	margin: 0px;
+}
+
+pre {
+	margin: 0px;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="<%= model.getBaseURL() %>/web/built-editor.css"/>
+<script src="<%= model.getBaseURL() %>/web/built-editor.js"></script>
+
+<script>
+	function setOrionEditor(editor) {
+	  window.editor = editor;
+	  orion_onLoad();
+	}	
+</script>
+
+<% for (String script : model.getScripts()) { %>
+<script>
+<%= script %>
+</script>
+<% } %>
+
+</head>
+<body spellcheck="false">
+<pre id="editor" class="editor" data-editor-lang="<%= model.getLang() %>">
+</pre>
+</body>
+</html>
