@@ -5,10 +5,10 @@ E4 Tools explores the capability to provide a CSS Editor with Orion. See bug htt
 
 This Git projects tries to improve the Eclipse E4 Orion CSS Editor. It contains 3 projects : 
 
- * [org.eclipse.e4.tools.orion.editor](https://github.com/angelozerr/Eclipse-E4-Orion-CSS-Editor/tree/master/org.eclipse.e4.tools.orion.editor)} which provides
+ * [org.eclipse.e4.tools.orion.editor](https://github.com/angelozerr/Eclipse-E4-Orion-CSS-Editor/tree/master/org.eclipse.e4.tools.orion.editor) which provides
 a SWT control [OrionControl](https://github.com/angelozerr/Eclipse-E4-Orion-CSS-Editor/blob/master/org.eclipse.e4.tools.orion.editor/src/org/eclipse/e4/tools/orion/editor/swt/OrionControl.java)
 which loads Javascript Orion editor in a SWT Browser. It provides setText, getText, setDirty, isDirty and setFocus methods.
- * [https://github.com/angelozerr/Eclipse-E4-Orion-CSS-Editor/tree/master/org.eclipse.e4.tools.orion.css.editor org.eclipse.e4.tools.orion.css.editor] is the original 
+ * [org.eclipse.e4.tools.orion.css.editor](https://github.com/angelozerr/Eclipse-E4-Orion-CSS-Editor/tree/master/org.eclipse.e4.tools.orion.css.editor) is the original 
 Orion CSS Editor (See [CSSEditorPreferences](https://github.com/angelozerr/Eclipse-E4-Orion-CSS-Editor/blob/master/org.eclipse.e4.tools.orion.css.editor/src/org/eclipse/e4/tools/orion/css/editor/CSSEditorPreferences.java)) 
 but instead of using a SWT Browser which loads the Orion CSS Editor, it uses OrionControl.
  * [org.eclipse.e4.tools.orion.editor.samples](https://github.com/angelozerr/Eclipse-E4-Orion-CSS-Editor/tree/master/org.eclipse.e4.tools.orion.editor.samples) provides SWT Java main samples
