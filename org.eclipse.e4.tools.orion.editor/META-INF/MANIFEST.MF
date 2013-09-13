@@ -6,12 +6,12 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.osgi.framework
 Require-Bundle: org.eclipse.swt;resolution:=optional,
- org.eclipse.rap.rwt;resolution:=optional
+ org.eclipse.rap.rwt;resolution:=optional,
+ org.eclipse.core.runtime
 Export-Package: org.eclipse.e4.tools.orion.editor,
  org.eclipse.e4.tools.orion.editor.builder,
  org.eclipse.e4.tools.orion.editor.builder.css,
  org.eclipse.e4.tools.orion.editor.builder.js,
- org.eclipse.e4.tools.orion.editor.swt
-Eclipse-BundleShape: dir 
+ org.eclipse.e4.tools.orion.editor.swt 
 Bundle-Activator: org.eclipse.e4.tools.orion.editor.Activator
 Bundle-ActivationPolicy: lazy

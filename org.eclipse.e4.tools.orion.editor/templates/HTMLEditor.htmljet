@@ -1,5 +1,5 @@
-<%@ jet package="org.eclipse.e4.tools.orion.editor.builder" class="OrionEditorTemplate" %>
-<% OrionEditorModel model = (OrionEditorModel)argument; %>
+<%@ jet package="org.eclipse.e4.tools.orion.editor.builder" class="HTMLEditor" %>
+<% EditorModel model = (EditorModel)argument; %>
 <!DOCTYPE html> 
 <html>
 <head>
@@ -21,13 +21,13 @@ pre {
 	margin: 0px;
 }
 </style>
-<link rel="stylesheet" type="text/css" href="<%= model.getBaseURL() %>/web/built-editor.css"/>
-<script src="<%= model.getBaseURL() %>/web/built-editor.js"></script>
+<link rel="stylesheet" type="text/css" href="<%= model.getEditorCssUrl() %>"/>
+<script src="<%= model.getEditorJsUrl() %>"></script>
 
 <script>
 	function setOrionEditor(editor) {
 	  window.editor = editor;
-	  orion_onLoad();
+	  if (typeof orion_onLoad == 'function') orion_onLoad();
 	}	
 </script>
 

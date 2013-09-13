@@ -1,6 +1,6 @@
 package org.eclipse.e4.tools.orion.editor.builder;
 
-public interface IOrionBuilder {
+public interface IHTMLBuilder {
 
 	String getHTML();
 }

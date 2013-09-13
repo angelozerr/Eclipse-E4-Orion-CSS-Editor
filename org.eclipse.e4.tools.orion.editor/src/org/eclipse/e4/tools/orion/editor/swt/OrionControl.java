@@ -1,9 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Angelo Zerr and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Angelo Zerr <angelo.zerr@gmail.com> - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.e4.tools.orion.editor.swt;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.e4.tools.orion.editor.builder.IOrionBuilder;
+import org.eclipse.e4.tools.orion.editor.builder.IHTMLBuilder;
 import org.eclipse.e4.tools.orion.editor.internal.org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -12,6 +22,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Layout;
 
+/**
+ * SWT Orion Editor control.
+ * 
+ */
 public class OrionControl extends Composite {
 
 	private final Browser browser;
@@ -20,10 +34,17 @@ public class OrionControl extends Composite {
 	private boolean focusToBeSet;
 	private List<IDirtyListener> listeners = new ArrayList<IDirtyListener>();
 
-	public OrionControl(Composite parent, int style, IOrionBuilder builder) {
+	/**
+	 * 
+	 * @param parent
+	 * @param style
+	 * @param builder
+	 */
+	public OrionControl(Composite parent, int style, IHTMLBuilder builder) {
 		super(parent, style);
 		super.setLayout(new FillLayout());
-		this.browser = BrowserFactory.create(this, getBrowserStyle());		
+		this.browser = BrowserFactory.create(this, getBrowserStyle());
+		// System.err.println(builder.getHTML());
 		browser.setText(builder.getHTML());
 		createBrowserFunctions();
 	}
@@ -43,6 +64,18 @@ public class OrionControl extends Composite {
 		};
 	}
 
+	protected Integer getBrowserStyle() {
+		return null;
+	}
+
+	@Override
+	public void setLayout(Layout layout) {
+		throw new UnsupportedOperationException(
+				"Cannot change internal layout of Editor");
+	}
+
+	// ------------------------- Load methods -----------------------
+
 	protected void onLoad() {
 		loaded = true;
 		if (textToBeSet != null) {
@@ -57,16 +90,16 @@ public class OrionControl extends Composite {
 		browser.evaluate("window.editor.addEventListener('DirtyChanged', orion_dirty, true)");
 	}
 
-	protected Integer getBrowserStyle() {
-		return null;
+	public boolean isLoaded() {
+		return loaded;
 	}
 
-	@Override
-	public void setLayout(Layout layout) {
-		throw new UnsupportedOperationException(
-				"Cannot change internal layout of Editor");
-	}
+	// ------------------------- Text methods -----------------------
 
+	/**
+	 * 
+	 * @param text
+	 */
 	public void setText(String text) {
 		if (text == null || text.length() == 0) {
 			text = "";
@@ -102,6 +135,8 @@ public class OrionControl extends Composite {
 		return (String) browser.evaluate("return editor.getText();");
 	}
 
+	// ------------------------- Focus methods -----------------------
+
 	@Override
 	public boolean setFocus() {
 		boolean result = browser.setFocus();
@@ -115,10 +150,12 @@ public class OrionControl extends Composite {
 		return result;
 	}
 
-	public boolean isLoaded() {
-		return loaded;
-	}
+	// ------------------------- Dirty methods -----------------------
 
+	/**
+	 * 
+	 * @param l
+	 */
 	public void addDirtyListener(IDirtyListener l) {
 		listeners.add(l);
 	}

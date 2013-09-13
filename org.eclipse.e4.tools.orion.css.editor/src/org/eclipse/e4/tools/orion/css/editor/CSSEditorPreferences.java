@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.tools.orion.editor.builder.css.CSSBuilder;
+import org.eclipse.e4.tools.orion.editor.builder.css.E4CSSBuilder;
 import org.eclipse.e4.tools.orion.editor.swt.OrionControl;
 import org.eclipse.e4.ui.css.swt.internal.theme.ThemeEngine;
 import org.eclipse.e4.ui.css.swt.theme.ITheme;
@@ -68,8 +69,6 @@ public class CSSEditorPreferences extends PreferencePageEnhancer {
 		try {
 			initContent();
 
-			// loadEditorHtml();
-
 			// Render it
 			Composite composite3 = new Composite(parent, SWT.BORDER);
 			composite3.setLayout(new FillLayout());
@@ -78,13 +77,9 @@ public class CSSEditorPreferences extends PreferencePageEnhancer {
 			data.heightHint = 500;
 			composite3.setLayoutData(data);
 
-			CSSBuilder builder = new CSSBuilder(
-					FileLocator
-							.getBundleFile(org.eclipse.e4.tools.orion.editor.Activator
-									.getContext().getBundle()));
-			editor = new OrionControl(composite3, SWT.NONE, builder);
+			editor = new OrionControl(composite3, SWT.NONE, E4CSSBuilder.getInstance());
 			editor.setText(editorContent);
-			
+
 		} catch (IOException e) {
 			Activator
 					.getDefault()
@@ -94,24 +89,6 @@ public class CSSEditorPreferences extends PreferencePageEnhancer {
 			return;
 		}
 	}
-
-	/*
-	 * private void loadEditorHtml() throws IOException { final Bundle bundle =
-	 * Activator.getDefault().getBundle(); final InputStream contentAssistInput
-	 * = bundle.getEntry( "/web/swtContentAssist.js").openStream(); String
-	 * contentAssistTemplate = loadFile(contentAssistInput, 1024); String
-	 * keywords = loadKeywords(); String contentAssist =
-	 * String.format(contentAssistTemplate, keywords); final InputStream
-	 * cssTemplateInput = bundle.getEntry("/web/css.html") .openStream(); String
-	 * cssTemplate = loadFile(cssTemplateInput, 1024); final String editorCssUrl
-	 * = FileLocator.toFileURL(
-	 * bundle.getEntry("/web/built-editor.css")).toExternalForm(); final String
-	 * editorJsUrl = FileLocator.toFileURL(
-	 * bundle.getEntry("/web/built-editor.js")).toExternalForm();
-	 * 
-	 * editorHtml = String.format(cssTemplate, editorCssUrl, editorJsUrl,
-	 * contentAssist, editorContent); }
-	 */
 
 	private void initContent() throws MalformedURLException, IOException {
 		final ITheme theme = selection;
@@ -130,45 +107,6 @@ public class CSSEditorPreferences extends PreferencePageEnhancer {
 		} else {
 			editorContent = "/*\n * This is an Orion editor sample.\n */\nfunction() {\n    var a = 'hi there!';\n    window.console.log(a);\n}";
 		}
-	}
-
-	private String loadKeywords() {
-		StringBuilder buf = new StringBuilder();
-
-		IExtensionRegistry registry = RegistryFactory.getRegistry();
-		IExtensionPoint extPoint = registry
-				.getExtensionPoint("org.eclipse.e4.ui.css.core.propertyHandler");
-		ArrayList<IConfigurationElement> matchingElements = new ArrayList<IConfigurationElement>();
-		ArrayList<IConfigurationElement> controlAdapters = new ArrayList<IConfigurationElement>();
-		for (IExtension e : extPoint.getExtensions()) {
-			IConfigurationElement[] elements = e.getConfigurationElements();
-			for (int i = 0; i < elements.length; i++) {
-				IConfigurationElement element = elements[i];
-				controlAdapters.add(element);
-				IConfigurationElement[] child = element
-						.getChildren("property-name");
-				for (int j = 0; j < child.length; j++) {
-					matchingElements.add(child[j]);
-				}
-			}
-		}
-		Iterator<IConfigurationElement> iter = matchingElements.iterator();
-		boolean once = true;
-		while (iter.hasNext()) {
-			IConfigurationElement type = iter.next();
-			String name = type.getAttribute("name");
-			if (!once) {
-				buf.append(',');
-				buf.append('\n');
-			}
-			buf.append('"');
-			buf.append(name);
-			buf.append('"');
-			once = false;
-		}
-		buf.append('\n');
-
-		return buf.toString();
 	}
 
 	public String loadFile(final InputStream in, final int bufferSize)
@@ -198,13 +136,13 @@ public class CSSEditorPreferences extends PreferencePageEnhancer {
 					&& !newTheme.getId().equals(oldSelection.getId())) {
 				try {
 					if (!editor.isDisposed()) {
-					initContent();
-					//loadEditorHtml();
-					//browser.setText(editorHtml, true);
-					editor.setText(editorContent);
-					editor.setDirty(false);
+						initContent();
+						// loadEditorHtml();
+						// browser.setText(editorHtml, true);
+						editor.setText(editorContent);
+						editor.setDirty(false);
 					}
-					
+
 				} catch (IOException e) {
 					Activator
 							.getDefault()
@@ -248,8 +186,7 @@ public class CSSEditorPreferences extends PreferencePageEnhancer {
 			IPath path = new Path(e4CSSPath
 					+ System.getProperty("file.separator")
 					+ filePath.lastSegment());
-			final Object rc = editor
-					.getText();
+			final Object rc = editor.getText();
 			if (!(rc instanceof String)) {
 				Activator
 						.getDefault()

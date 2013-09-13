@@ -11,7 +11,7 @@
 package org.eclipse.e4.tools.orion.editor.swt;
 
 /**
- * Listener to observer dirty changed.
+ * Listener to observe the dirty changed.
  */
 public interface IDirtyListener {
 

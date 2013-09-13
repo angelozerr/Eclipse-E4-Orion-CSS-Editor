@@ -26,7 +26,7 @@ public class CSSEditor {
 		shell.setLayout(new GridLayout());
 
 		CSSBuilder builder = new CSSBuilder(new File(
-				"../org.eclipse.e4.tools.orion.editor"));
+				"../org.eclipse.e4.tools.orion.editor"), "");
 		OrionControl editor = new OrionControl(shell, SWT.BORDER, builder);
 		editor.setLayoutData(new GridData(GridData.FILL_BOTH));
 

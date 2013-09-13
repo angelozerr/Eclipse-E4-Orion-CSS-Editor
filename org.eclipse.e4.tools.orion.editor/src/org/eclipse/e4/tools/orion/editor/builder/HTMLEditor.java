@@ -1,20 +1,20 @@
 package org.eclipse.e4.tools.orion.editor.builder;
 
-public class OrionEditorTemplate
+public class HTMLEditor
 {
   protected static String nl;
-  public static synchronized OrionEditorTemplate create(String lineSeparator)
+  public static synchronized HTMLEditor create(String lineSeparator)
   {
     nl = lineSeparator;
-    OrionEditorTemplate result = new OrionEditorTemplate();
+    HTMLEditor result = new HTMLEditor();
     nl = null;
     return result;
   }
 
   public final String NL = nl == null ? (System.getProperties().getProperty("line.separator")) : nl;
   protected final String TEXT_1 = "<!DOCTYPE html> " + NL + "<html>" + NL + "<head>" + NL + "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />" + NL + "<title>Theme CSS editor</title>" + NL + "<style>" + NL + "#editor {" + NL + "\t//border: 1px solid teal;" + NL + "\tposition: absolute;" + NL + "\ttop: 0px;" + NL + "\tleft: 0px;" + NL + "\tbottom: 0px;" + NL + "\tright: 0px;" + NL + "\t//margin: 20px;" + NL + "\tmargin: 0px;" + NL + "}" + NL + "" + NL + "pre {" + NL + "\tmargin: 0px;" + NL + "}" + NL + "</style>" + NL + "<link rel=\"stylesheet\" type=\"text/css\" href=\"";
-  protected final String TEXT_2 = "/web/built-editor.css\"/>" + NL + "<script src=\"";
-  protected final String TEXT_3 = "/web/built-editor.js\"></script>" + NL + "" + NL + "<script>" + NL + "\tfunction setOrionEditor(editor) {" + NL + "\t  window.editor = editor;" + NL + "\t  orion_onLoad();" + NL + "\t}\t" + NL + "</script>" + NL;
+  protected final String TEXT_2 = "\"/>" + NL + "<script src=\"";
+  protected final String TEXT_3 = "\"></script>" + NL + "" + NL + "<script>" + NL + "\tfunction setOrionEditor(editor) {" + NL + "\t  window.editor = editor;" + NL + "\t  if (typeof orion_onLoad == 'function') orion_onLoad();" + NL + "\t}\t" + NL + "</script>" + NL;
   protected final String TEXT_4 = NL + "<script>";
   protected final String TEXT_5 = NL;
   protected final String TEXT_6 = NL + "</script>";
@@ -25,11 +25,11 @@ public class OrionEditorTemplate
   public String generate(Object argument)
   {
     final StringBuffer stringBuffer = new StringBuffer();
-     OrionEditorModel model = (OrionEditorModel)argument; 
+     EditorModel model = (EditorModel)argument; 
     stringBuffer.append(TEXT_1);
-    stringBuffer.append( model.getBaseURL() );
+    stringBuffer.append( model.getEditorCssUrl() );
     stringBuffer.append(TEXT_2);
-    stringBuffer.append( model.getBaseURL() );
+    stringBuffer.append( model.getEditorJsUrl() );
     stringBuffer.append(TEXT_3);
      for (String script : model.getScripts()) { 
     stringBuffer.append(TEXT_4);

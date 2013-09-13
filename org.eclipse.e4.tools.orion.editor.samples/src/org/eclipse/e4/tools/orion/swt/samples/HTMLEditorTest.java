@@ -3,18 +3,18 @@ package org.eclipse.e4.tools.orion.swt.samples;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.e4.tools.orion.editor.builder.OrionEditorModel;
-import org.eclipse.e4.tools.orion.editor.builder.OrionEditorTemplate;
+import org.eclipse.e4.tools.orion.editor.builder.HTMLEditor;
+import org.eclipse.e4.tools.orion.editor.builder.EditorModel;
 import org.eclipse.e4.tools.orion.editor.builder.css.CSSEdit;
 
-public class OrionTemplateTest {
+public class HTMLEditorTest {
 
 	public static void main(String[] args) throws IOException {
-		OrionEditorTemplate builder = new OrionEditorTemplate();
+		HTMLEditor builder = new HTMLEditor();
 
 		File f = new File("");
 
-		OrionEditorModel context = new OrionEditorModel(f, "css");
+		EditorModel context = new EditorModel(f, "css");
 
 		String keywords = "";
 		String swtContentAssist = new CSSEdit().generate(keywords);
