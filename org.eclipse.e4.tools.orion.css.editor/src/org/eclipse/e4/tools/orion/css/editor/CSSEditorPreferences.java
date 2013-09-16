@@ -77,6 +77,7 @@ public class CSSEditorPreferences extends PreferencePageEnhancer {
 			data.heightHint = 500;
 			composite3.setLayoutData(data);
 
+			// Create Orion control and fill the editor with the selected CSS theme.
 			editor = new OrionControl(composite3, SWT.NONE, E4CSSBuilder.getInstance());
 			editor.setText(editorContent);
 
@@ -136,9 +137,8 @@ public class CSSEditorPreferences extends PreferencePageEnhancer {
 					&& !newTheme.getId().equals(oldSelection.getId())) {
 				try {
 					if (!editor.isDisposed()) {
+						// The editor is not disposed, fill the Orion editor with the selected CSS Theme..
 						initContent();
-						// loadEditorHtml();
-						// browser.setText(editorHtml, true);
 						editor.setText(editorContent);
 						editor.setDirty(false);
 					}

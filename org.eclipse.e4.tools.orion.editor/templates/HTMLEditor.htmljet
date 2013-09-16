@@ -1,5 +1,5 @@
 <%@ jet package="org.eclipse.e4.tools.orion.editor.builder" class="HTMLEditor" %>
-<% EditorModel model = (EditorModel)argument; %>
+<% EditorOptions options = (EditorOptions)argument; %>
 <!DOCTYPE html> 
 <html>
 <head>
@@ -21,8 +21,8 @@ pre {
 	margin: 0px;
 }
 </style>
-<link rel="stylesheet" type="text/css" href="<%= model.getEditorCssUrl() %>"/>
-<script src="<%= model.getEditorJsUrl() %>"></script>
+<link rel="stylesheet" type="text/css" href="<%= options.getEditorCssUrl() %>"/>
+<script src="<%= options.getEditorJsUrl() %>"></script>
 
 <script>
 	function setOrionEditor(editor) {
@@ -31,7 +31,7 @@ pre {
 	}	
 </script>
 
-<% for (String script : model.getScripts()) { %>
+<% for (String script : options.getScripts()) { %>
 <script>
 <%= script %>
 </script>
@@ -39,7 +39,7 @@ pre {
 
 </head>
 <body spellcheck="false">
-<pre id="editor" class="editor" data-editor-lang="<%= model.getLang() %>">
+<pre id="editor" class="editor" data-editor-lang="<%= options.getLang() %>" data-editor-show-folding-ruler="true" >
 </pre>
 </body>
 </html>

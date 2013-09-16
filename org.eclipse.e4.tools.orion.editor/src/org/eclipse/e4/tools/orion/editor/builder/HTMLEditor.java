@@ -19,26 +19,26 @@ public class HTMLEditor
   protected final String TEXT_5 = NL;
   protected final String TEXT_6 = NL + "</script>";
   protected final String TEXT_7 = NL + NL + "</head>" + NL + "<body spellcheck=\"false\">" + NL + "<pre id=\"editor\" class=\"editor\" data-editor-lang=\"";
-  protected final String TEXT_8 = "\">" + NL + "</pre>" + NL + "</body>" + NL + "</html>";
+  protected final String TEXT_8 = "\" data-editor-show-folding-ruler=\"true\" >" + NL + "</pre>" + NL + "</body>" + NL + "</html>";
   protected final String TEXT_9 = NL;
 
   public String generate(Object argument)
   {
     final StringBuffer stringBuffer = new StringBuffer();
-     EditorModel model = (EditorModel)argument; 
+     EditorOptions options = (EditorOptions)argument; 
     stringBuffer.append(TEXT_1);
-    stringBuffer.append( model.getEditorCssUrl() );
+    stringBuffer.append( options.getEditorCssUrl() );
     stringBuffer.append(TEXT_2);
-    stringBuffer.append( model.getEditorJsUrl() );
+    stringBuffer.append( options.getEditorJsUrl() );
     stringBuffer.append(TEXT_3);
-     for (String script : model.getScripts()) { 
+     for (String script : options.getScripts()) { 
     stringBuffer.append(TEXT_4);
     stringBuffer.append(TEXT_5);
     stringBuffer.append( script );
     stringBuffer.append(TEXT_6);
      } 
     stringBuffer.append(TEXT_7);
-    stringBuffer.append( model.getLang() );
+    stringBuffer.append( options.getLang() );
     stringBuffer.append(TEXT_8);
     stringBuffer.append(TEXT_9);
     return stringBuffer.toString();

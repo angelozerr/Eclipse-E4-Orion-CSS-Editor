@@ -14,18 +14,43 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.e4.tools.orion.editor.builder.AbstractHTMLBuilder;
+import org.eclipse.e4.tools.orion.editor.builder.IHTMLBuilder;
 
+/**
+ * {@link IHTMLBuilder} to build the Orion HTML editor for CSS mode.
+ * 
+ */
 public class CSSBuilder extends AbstractHTMLBuilder {
 
-	public CSSBuilder(CSSModel model) {
-		super(model);
+	/**
+	 * Constructor with {@link CSSOptions}.
+	 * 
+	 * @param options
+	 *            the CSS options.
+	 */
+	public CSSBuilder(CSSOptions options) {
+		super(options);
 	}
 
-	public CSSBuilder(File file, String keywords) {
-		this(new CSSModel(file, keywords));
+	/**
+	 * Constructor with file base dir.
+	 * 
+	 * @param baseDir
+	 *            base directory of the CSS and JS.
+	 * @param keywords
+	 *            to customize CSS completion.
+	 */
+	public CSSBuilder(File baseDir, String keywords) {
+		this(new CSSOptions(baseDir, keywords));
 	}
 
+	/**
+	 * Constructor to use only on OSGi context.
+	 * 
+	 * @param keywords
+	 *            to customize CSS completion.
+	 */
 	public CSSBuilder(String keywords) throws IOException {
-		this(new CSSModel(keywords));
+		this(new CSSOptions(keywords));
 	}
 }

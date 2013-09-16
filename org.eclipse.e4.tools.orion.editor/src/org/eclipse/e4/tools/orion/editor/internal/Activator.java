@@ -8,7 +8,7 @@
  * Contributors:
  *     Angelo Zerr <angelo.zerr@gmail.com> - initial API and implementation
  *******************************************************************************/
-package org.eclipse.e4.tools.orion.editor;
+package org.eclipse.e4.tools.orion.editor.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

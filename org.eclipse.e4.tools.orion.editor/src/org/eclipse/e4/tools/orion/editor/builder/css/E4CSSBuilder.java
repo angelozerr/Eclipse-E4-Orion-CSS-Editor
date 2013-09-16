@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Angelo Zerr and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Angelo Zerr <angelo.zerr@gmail.com> - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.e4.tools.orion.editor.builder.css;
 
 import java.io.IOException;
@@ -10,6 +20,10 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.RegistryFactory;
 
+/**
+ * Build the Orion HTML editor for CSS mode with E4 CSS selectors.
+ * 
+ */
 public class E4CSSBuilder extends CSSBuilder {
 
 	private static E4CSSBuilder instance;
@@ -34,6 +48,12 @@ public class E4CSSBuilder extends CSSBuilder {
 		super(loadKeywords());
 	}
 
+	/**
+	 * Returns keywords for CSS completion with E4 CSS Engine properties to
+	 * customize completion;
+	 * 
+	 * @return keywords for CSS completion with E4 CSS Engine properties.
+	 */
 	private static String loadKeywords() {
 		StringBuilder buf = new StringBuilder();
 
