@@ -26,7 +26,7 @@ import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.tools.orion.editor.builder.css.CSSBuilder;
 import org.eclipse.e4.tools.orion.editor.builder.css.E4CSSBuilder;
-import org.eclipse.e4.tools.orion.editor.swt.OrionControl;
+import org.eclipse.e4.tools.orion.editor.swt.OrionEditorControl;
 import org.eclipse.e4.ui.css.swt.internal.theme.ThemeEngine;
 import org.eclipse.e4.ui.css.swt.theme.ITheme;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
@@ -49,7 +49,7 @@ public class CSSEditorPreferences extends PreferencePageEnhancer {
 	ITheme selection;
 	IThemeEngine engine;
 	boolean resetCurrentTheme;
-	private OrionControl editor;
+	private OrionEditorControl editor;
 	private String editorContent;
 	private Path filePath;
 
@@ -78,7 +78,7 @@ public class CSSEditorPreferences extends PreferencePageEnhancer {
 			composite3.setLayoutData(data);
 
 			// Create Orion control and fill the editor with the selected CSS theme.
-			editor = new OrionControl(composite3, SWT.NONE, E4CSSBuilder.getInstance());
+			editor = new OrionEditorControl(composite3, SWT.NONE, E4CSSBuilder.getInstance());
 			editor.setText(editorContent);
 
 		} catch (IOException e) {

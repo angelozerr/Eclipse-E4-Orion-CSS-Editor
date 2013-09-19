@@ -13,8 +13,8 @@ package org.eclipse.e4.tools.orion.editor.swt;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.e4.tools.orion.editor.builder.IHTMLBuilder;
-import org.eclipse.e4.tools.orion.editor.internal.org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.layout.FillLayout;
@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Layout;
  * SWT Orion Editor control.
  * 
  */
-public class OrionControl extends Composite {
+public class OrionEditorControl extends Composite {
 
 	/**
 	 * The SWT Browser which loads the HTML Orion editor.
@@ -72,7 +72,7 @@ public class OrionControl extends Composite {
 	 *            the HTML builder to use to load the Orion editor with SWT
 	 *            Browser.
 	 */
-	public OrionControl(Composite parent, int style, IHTMLBuilder builder) {
+	public OrionEditorControl(Composite parent, int style, IHTMLBuilder builder) {
 		super(parent, style);
 		super.setLayout(new FillLayout());
 		this.browser = BrowserFactory.create(this, getBrowserStyle());
@@ -183,7 +183,7 @@ public class OrionControl extends Composite {
 	 */
 	protected void doSetText(String text) {
 		String js = new StringBuilder("window.editor.setInput(null, null, \"")
-				.append(StringEscapeUtils.escapeEcmaScript(text))
+				.append(StringEscapeUtils.escapeJavaScript(text))
 				.append("\", false );").toString();
 		browser.evaluate(js);
 	}

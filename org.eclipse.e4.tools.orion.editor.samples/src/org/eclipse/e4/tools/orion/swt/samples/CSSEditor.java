@@ -14,7 +14,7 @@ import java.io.File;
 
 import org.eclipse.e4.tools.orion.editor.builder.css.CSSBuilder;
 import org.eclipse.e4.tools.orion.editor.swt.IDirtyListener;
-import org.eclipse.e4.tools.orion.editor.swt.OrionControl;
+import org.eclipse.e4.tools.orion.editor.swt.OrionEditorControl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Java main which uses {@link OrionControl} to load CSS content with Orion
+ * Java main which uses {@link OrionEditorControl} to load CSS content with Orion
  * editor.
  */
 public class CSSEditor {
@@ -41,7 +41,7 @@ public class CSSEditor {
 
 		CSSBuilder builder = new CSSBuilder(new File(
 				"../org.eclipse.e4.tools.orion.editor"), "");
-		OrionControl editor = new OrionControl(shell, SWT.BORDER, builder);
+		OrionEditorControl editor = new OrionEditorControl(shell, SWT.BORDER, builder);
 		editor.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		// Menu
@@ -60,7 +60,7 @@ public class CSSEditor {
 
 	}
 
-	private static Menu createMenu(final Shell shell, final OrionControl editor) {
+	private static Menu createMenu(final Shell shell, final OrionEditorControl editor) {
 		Menu menuBar = new Menu(shell, SWT.BAR);
 		// File menu
 		createFileMenu(shell, menuBar, editor);
@@ -68,7 +68,7 @@ public class CSSEditor {
 	}
 
 	private static void createFileMenu(final Shell shell, Menu menuBar,
-			final OrionControl editor) {
+			final OrionEditorControl editor) {
 		MenuItem fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 		fileMenuHeader.setText("&File");
 
