@@ -418,13 +418,8 @@ define("almond", function(){});
 /*global define*/
 
 define("orion/editor/shim", [], function() { //$NON-NLS-0$
-
-	/**
-	 * Partial ECMAScript 5 shim.
-	 */
 	
 	if (!Object.create) {
-		/* This shim does not properly support the props paramenter. It only works for Deferred.js. */
 		Object.create = function(proto, props) {
 			function N() {}
 			N.prototype = proto;
@@ -3758,7 +3753,7 @@ define("orion/editor/textView", [ //$NON-NLS-0$
 			var step = data.count < 0 ? -1 : 1;
 			if (offset === model.getLineEnd(lineIndex)) {
 				lineChild = child.lastChild;
-				while (lineChild && lineChild.ignoreChars === lineChild.firstChild.length) {
+				while (lineChild && lineChild.ignoreChars) {
 					lineChild = lineChild.previousSibling;
 				}
 				if (!lineChild) {
@@ -8494,7 +8489,7 @@ define("orion/editor/textView", [ //$NON-NLS-0$
 			sel1Div.style.top = (sel1Top - vd) + "px"; //$NON-NLS-0$
 			sel1Div.style.width = Math.max(0, sel1Right - sel1Left) + "px"; //$NON-NLS-0$
 			sel1Div.style.height = Math.max(0, sel1Bottom - sel1Top) + "px"; //$NON-NLS-0$
-			if (startNode.lineIndex === endNode.lineIndex) {
+			if (startRect.top === endRect.top) {
 				sel1Right = Math.min(r, right);
 				sel1Div.style.width = Math.max(0, sel1Right - sel1Left) + "px"; //$NON-NLS-0$
 			} else {
@@ -8507,7 +8502,7 @@ define("orion/editor/textView", [ //$NON-NLS-0$
 				sel3Div.style.top = (sel3Top - vd) + "px"; //$NON-NLS-0$
 				sel3Div.style.width = Math.max(0, sel3Right - sel3Left) + "px"; //$NON-NLS-0$
 				sel3Div.style.height = Math.max(0, sel3Bottom - sel3Top) + "px"; //$NON-NLS-0$
-				if (Math.abs(startNode.lineIndex - endNode.lineIndex) > 1) {
+				if (sel3Top - sel1Bottom > 0) {
 					var sel2Div = this._selDiv2;
 					sel2Div.style.left = (left - hd)  + "px"; //$NON-NLS-0$
 					sel2Div.style.top = (sel1Bottom - vd) + "px"; //$NON-NLS-0$
@@ -12810,65 +12805,6 @@ define("orion/editor/textDND", [], function() { //$NON-NLS-0$
 
 /*******************************************************************************
  * @license
- * Copyright (c) 2013 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials are made 
- * available under the terms of the Eclipse Public License v1.0 
- * (http://www.eclipse.org/legal/epl-v10.html), and the Eclipse Distribution 
- * License v1.0 (http://www.eclipse.org/org/documents/edl-v10.html). 
- * 
- * Contributors: IBM Corporation - initial API and implementation
- ******************************************************************************/
-/*global define*/
-define('orion/objects',[], function() {
-	function mixin(target/*, source..*/) {
-		for (var j = 1; j < arguments.length; j++) {
-			var source = arguments[j];
-			for (var key in source) {
-				if (Object.prototype.hasOwnProperty.call(source, key)) {
-					target[key] = source[key];
-				}
-			}
-		}
-		return target;
-	}
-
-	/**
-	 * @name orion.objects
-	 * @class Object-oriented helpers.
-	 */
-	return {
-		/**
-		 * Creates a shallow clone of the given <code>object</code>.
-		 * @name orion.objects.clone
-		 * @function
-		 * @static
-		 * @param {Object|Array} object The object to clone. Must be a "normal" Object or Array. Other built-ins,
-		 * host objects, primitives, etc, will not work.
-		 * @returns {Object|Array} A clone of <code>object</code>.
-		 */
-		clone: function(object) {
-			if (Array.isArray(object)) {
-				return Array.prototype.slice.call(object);
-			}
-			var clone = Object.create(Object.getPrototypeOf(object));
-			mixin(clone, object);
-			return clone;
-		},
-		/**
-		 * Mixes all <code>source</code>'s own enumerable properties into <code>target</code>. Multiple source objects
-		 * can be passed as varags.
-		 * @name orion.objects.mixin
-		 * @function
-		 * @static
-		 * @param {Object} target
-		 * @param {Object} source
-		 */
-		mixin: mixin
-	};
-});
-
-/*******************************************************************************
- * @license
  * Copyright (c) 2009, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials are made 
  * available under the terms of the Eclipse Public License v1.0 
@@ -12885,10 +12821,21 @@ define("orion/editor/editor", [ //$NON-NLS-0$
 	'orion/editor/eventTarget', //$NON-NLS-0$
 	'orion/editor/tooltip', //$NON-NLS-0$
 	'orion/editor/annotations', //$NON-NLS-0$
-	'orion/objects', //$NON-NLS-0$
 	'orion/util' //$NON-NLS-0$
-], function(messages, mEventTarget, mTooltip, mAnnotations, objects, util) {
+], function(messages, mEventTarget, mTooltip, mAnnotations, util) {
 
+	/**	@private */
+	function merge(obj1, obj2) {
+		if (obj2) {
+			for (var p in obj2) {
+				if (obj2.hasOwnProperty(p)) {
+					obj1[p] = obj2[p];
+				}
+			}
+		}
+		return obj1;
+	}
+		
 	var AT = mAnnotations.AnnotationType;
 
 	var HIGHLIGHT_ERROR_ANNOTATION = "orion.annotation.highlightError"; //$NON-NLS-0$
@@ -13676,8 +13623,8 @@ define("orion/editor/editor", [ //$NON-NLS-0$
 			}
 			var createGroup = function() {
 				var annotation = mAnnotations.AnnotationType.createAnnotation(this.groupType, this.start, this.end, this.title);
-				annotation.style = objects.mixin({}, annotation.style);
-				annotation.style.style = objects.mixin({}, annotation.style.style);
+				annotation.style = merge({}, annotation.style);
+				annotation.style.style = merge({}, annotation.style.style);
 				annotation.style.style.backgroundColor = "";
 				this.groupAnnotation = annotation;
 				annotation.blame = this.blame;
@@ -13706,8 +13653,8 @@ define("orion/editor/editor", [ //$NON-NLS-0$
 				var annotation = mAnnotations.AnnotationType.createAnnotation(AT.ANNOTATION_BLAME, start, end, title);
 				var blameColor = blameRGB.slice(0);
 				blameColor.push(blameMarker.Shade);
-				annotation.style = objects.mixin({}, annotation.style);
-				annotation.style.style = objects.mixin({}, annotation.style.style);
+				annotation.style = merge({}, annotation.style);
+				annotation.style.style = merge({}, annotation.style.style);
 				annotation.style.style.backgroundColor = "rgba(" + blameColor.join() + ")"; //$NON-NLS-0$ //$NON-NLS-1$
 				annotation.groupId = blameMarker.Name;
 				annotation.groupType = AT.ANNOTATION_CURRENT_BLAME;
@@ -13888,6 +13835,64 @@ define("orion/regex", [], function() { //$NON-NLS-0$
 	return {
 		escape: escape,
 		parse: parse
+	};
+});
+
+/*******************************************************************************
+ * @license
+ * Copyright (c) 2013 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials are made 
+ * available under the terms of the Eclipse Public License v1.0 
+ * (http://www.eclipse.org/legal/epl-v10.html), and the Eclipse Distribution 
+ * License v1.0 (http://www.eclipse.org/org/documents/edl-v10.html). 
+ * 
+ * Contributors: IBM Corporation - initial API and implementation
+ ******************************************************************************/
+/*global define*/
+define('orion/objects',[], function() {
+	function mixin(target/*, source..*/) {
+		for (var j = 1; j < arguments.length; j++) {
+			var source = arguments[j];
+			for (var key in source) {
+				if (source.hasOwnProperty(key)) {
+					target[key] = source[key];
+				}
+			}
+		}
+	}
+
+	/**
+	 * @name orion.objects
+	 * @class Object-oriented helpers.
+	 */
+	return {
+		/**
+		 * Creates a shallow clone of the given <code>object</code>.
+		 * @name orion.objects.clone
+		 * @function
+		 * @static
+		 * @param {Object|Array} object The object to clone. Must be a "normal" Object or Array. Other built-ins,
+		 * host objects, primitives, etc, will not work.
+		 * @returns {Object|Array} A clone of <code>object</code>.
+		 */
+		clone: function(object) {
+			if (Array.isArray(object)) {
+				return Array.prototype.slice.call(object);
+			}
+			var clone = Object.create(Object.getPrototypeOf(object));
+			mixin(clone, object);
+			return clone;
+		},
+		/**
+		 * Mixes all <code>source</code>'s own enumerable properties into <code>target</code>. Multiple source objects
+		 * can be passed as varags.
+		 * @name orion.objects.mixin
+		 * @function
+		 * @static
+		 * @param {Object} target
+		 * @param {Object} source
+		 */
+		mixin: mixin
 	};
 });
 
@@ -14140,11 +14145,7 @@ define("orion/editor/find", [ //$NON-NLS-0$
 		},
 		getFindString: function() {
 			var selection = this._editor.getSelection();
-			var searchString = this._editor.getText(selection.start, selection.end);
-			if (this._regex) {
-				searchString = mRegex.escape(searchString);
-			}
-			return searchString || this._lastString;
+			return this._editor.getText(selection.start, selection.end) || this._lastString;
 		},
 		getOptions: function() {
 			return {
@@ -14338,8 +14339,15 @@ define("orion/editor/find", [ //$NON-NLS-0$
 				this._undoStack.endCompoundChange();
 			}
 		},
-		_find: function(string, startOffset, noWrap) {
-			return this._editor.getModel().find({
+		_doFind: function(string, startOffset, count, noWrap) {
+			count = count || 1;
+			var editor = this._editor;
+			if (!string) {
+				this._removeAllAnnotations();
+				return null;
+			}
+			this._lastString = string;
+			var iterator = editor.getModel().find({
 				string: string,
 				start: startOffset,
 				end: this._end,
@@ -14349,26 +14357,7 @@ define("orion/editor/find", [ //$NON-NLS-0$
 				wholeWord: this._wholeWord,
 				caseInsensitive: this._caseInsensitive
 			});
-		},
-		_doFind: function(string, startOffset, count, noWrap) {
-			count = count || 1;
-			var editor = this._editor;
-			if (!string) {
-				this._removeAllAnnotations();
-				return null;
-			}
-			this._lastString = string;
-			var result, iterator;
-			if (this._regex) {
-				try {
-					iterator = this._find(string, startOffset, noWrap);
-				} catch (ex) {
-					editor.reportStatus(ex.message, "error"); //$NON-NLS-0$
-					return;
-				}
-			} else {
-				iterator = this._find(string, startOffset, noWrap);
-			}
+			var result;
 			for (var i=0; i<count && iterator.hasNext(); i++) {
 				result = iterator.next();
 			}
@@ -15037,17 +15026,6 @@ define("orion/editor/actions", [ //$NON-NLS-0$
 				return this.skipClosingBracket(']'); //$NON-NLS-0$
 			}.bind(this));
 
-			// Autocomplete angle brackets <>
-			textView.setKeyBinding(new mKeyBinding.KeyBinding("<", false, false, false, false, "keypress"), "autoPairAngleBracket"); //$NON-NLS-2$ //$NON-NLS-1$ //$NON-NLS-0$
-			textView.setAction("autoPairAngleBracket", function() { //$NON-NLS-0$
-				return this.autoPairBrackets("<", ">"); //$NON-NLS-1$ //$NON-NLS-0$
-			}.bind(this));
-
-			textView.setKeyBinding(new mKeyBinding.KeyBinding('>', false, false, false, false, "keypress"), "skipClosingAngleBracket"); //$NON-NLS-2$ //$NON-NLS-1$ //$NON-NLS-0$
-			textView.setAction("skipClosingAngleBracket", function() { //$NON-NLS-0$
-				return this.skipClosingBracket('>'); //$NON-NLS-0$
-			}.bind(this));
-
 			// Autocomplete parentheses ()
 			textView.setKeyBinding(new mKeyBinding.KeyBinding("(", false, false, false, false, "keypress"), "autoPairParentheses"); //$NON-NLS-2$ //$NON-NLS-1$ //$NON-NLS-0$
 			textView.setAction("autoPairParentheses", function() { //$NON-NLS-0$
@@ -15126,7 +15104,7 @@ define("orion/editor/actions", [ //$NON-NLS-0$
 					return true;
 				// Proceed with autocompleting multi-line comment if the text before the caret matches
 				// the start or comment delimiter (*) of a multi-line comment
-				} else if (this.autoCompleteComments && !matchCommentEnd.test(lineTextBeforeCaret) &&
+				} else if ((!matchCommentEnd.test(lineTextBeforeCaret)) &&
 							(matchCommentStart.test(lineTextBeforeCaret) || matchCommentDelimiter.test(lineTextBeforeCaret))) {
 					var caretOffset;
 
@@ -15234,16 +15212,7 @@ define("orion/editor/actions", [ //$NON-NLS-0$
 		 * Automatically inserts the specified opening and closing brackets around the caret or selected text.
 		 */
 		autoPairBrackets: function(openBracket, closeBracket) {
-			if (openBracket === "[" && !this.autoPairSquareBrackets) {
-				return false;
-			} else if (openBracket === "{" && !this.autoPairBraces) {
-				return false;
-			} else if (openBracket === "(" && !this.autoPairParentheses) {
-				return false;
-			} else if (openBracket === "<" && !this.autoPairAngleBrackets) {
-				return false;
-			}
-
+			if (!this.autoPairing) { return false; }
 			var editor = this.editor;
 			var textView = editor.getTextView();
 			if (textView.getOptions("readonly")) { return false; } //$NON-NLS-0$
@@ -15273,7 +15242,7 @@ define("orion/editor/actions", [ //$NON-NLS-0$
 		 * Automatically inserts a pair of the specified quotation around the caret the caret or selected text.
 		 */
 		autoPairQuotations: function(quotation) {
-			if (!this.autoPairQuotation) { return false; }
+			if (!this.autoPairing) { return false; }
 			var editor = this.editor;
 			var textView = editor.getTextView();
 			if (textView.getOptions("readonly")) { return false; } //$NON-NLS-0$
@@ -15576,23 +15545,8 @@ define("orion/editor/actions", [ //$NON-NLS-0$
 				this.undoStack.endCompoundChange();
 			}
 		},
-		setAutoPairParentheses: function(enabled) {
-			this.autoPairParentheses = enabled;
-		},
-		setAutoPairBraces: function(enabled) {
-			this.autoPairBraces = enabled;
-		},
-		setAutoPairSquareBrackets: function(enabled) {
-			this.autoPairSquareBrackets = enabled;
-		},
-		setAutoPairAngleBrackets: function(enabled) {
-			this.autoPairAngleBrackets = enabled;
-		},
-		setAutoPairQuotations: function(enabled) {
-			this.autoPairQuotation = enabled;
-		},
-		setAutoCompleteComments: function(enabled) {
-			this.autoCompleteComments = enabled;
+		setAutoPairing: function(enabled) {
+			this.autoPairing = enabled;
 		},
 		setSmartIndentation: function(enabled) {
 			this.smartIndentation = enabled;
@@ -15878,10 +15832,9 @@ define("orion/editor/linkedMode", [ //$NON-NLS-0$
 				if (this.ignoreVerify) { return; }
 
 				// Get the position being modified
-				var start = this.editor.mapOffset(event.start);
 				var model = this.linkedModeModel, positionChanged, changed;
 				while (model) {
-					positionChanged = this._getPositionChanged(model, start, start + event.removedCharCount);
+					positionChanged = this._getPositionChanged(model, event.start, event.start + event.removedCharCount);
 					changed = positionChanged.position;
 					if (changed === undefined || changed.model !== model) {
 						// The change has been done outside of the positions, exit the Linked Mode
@@ -15900,7 +15853,7 @@ define("orion/editor/linkedMode", [ //$NON-NLS-0$
 				for (var i = 0; i < sortedPositions.length; ++i) {
 					pos = sortedPositions[i];
 					position = pos.position;
-					var inside = position.offset <= start && start <= position.offset + position.length;
+					var inside = position.offset <= event.start && event.start <= position.offset + position.length;
 					if (inside && !pos.ansestor) {
 						position.offset += deltaCount;
 						position.length += changeCount;
@@ -15922,12 +15875,9 @@ define("orion/editor/linkedMode", [ //$NON-NLS-0$
 				if (this.ignoreVerify) { return; }
 
 				// Get the position being modified
-				var editor = this.editor;
-				var start = editor.mapOffset(event.start);
-				var end = this.editor.mapOffset(event.end);
 				var model = this.linkedModeModel, positionChanged, changed;
 				while (model) {
-					positionChanged = this._getPositionChanged(model, start, end);
+					positionChanged = this._getPositionChanged(model, event.start, event.end);
 					changed = positionChanged.position;
 					if (changed === undefined || changed.model !== model) {
 						// The change has been done outside of the positions, exit the Linked Mode
@@ -15954,9 +15904,9 @@ define("orion/editor/linkedMode", [ //$NON-NLS-0$
 				
 				// Update position offsets taking into account all positions in the same changing group
 				var deltaCount = 0;
-				var changeCount = event.text.length - (end - start);
+				var changeCount = event.text.length - (event.end - event.start);
 				var sortedPositions = positionChanged.positions, position, pos;
-				var deltaStart = start - changed.position.offset, deltaEnd = end - changed.position.offset;
+				var deltaStart = event.start - changed.position.offset, deltaEnd = event.end - changed.position.offset;
 				for (var i = 0; i < sortedPositions.length; ++i) {
 					pos = sortedPositions[i];
 					position = pos.position;
@@ -15978,10 +15928,11 @@ define("orion/editor/linkedMode", [ //$NON-NLS-0$
 				
 				// Cancel this modification and apply same modification to all positions in changing group
 				this.ignoreVerify = true;
+				var textView = this.editor.getTextView();
 				for (i = sortedPositions.length - 1; i >= 0; i--) {
 					pos = sortedPositions[i];
 					if (pos.model === model && pos.group === changed.group) {
-						editor.setText(event.text, pos.oldOffset + deltaStart , pos.oldOffset + deltaEnd);
+						textView.setText(event.text, pos.oldOffset + deltaStart , pos.oldOffset + deltaEnd);
 					}
 				}
 				this.ignoreVerify = false;
@@ -16074,8 +16025,7 @@ define("orion/editor/linkedMode", [ //$NON-NLS-0$
 				this.linkedModeModel.nextModel = undefined;
 			}
 			if (!this.linkedModeModel) {
-				var editor = this.editor;
-				var textView = editor.getTextView();
+				var textView = this.editor.getTextView();
 				textView.removeKeyMode(this);
 				textView.removeEventListener("Verify", this.linkedModeListener.onVerify); //$NON-NLS-0$
 				textView.removeEventListener("ModelChanged", this.linkedModeListener.onModelChanged); //$NON-NLS-0$
@@ -16084,7 +16034,7 @@ define("orion/editor/linkedMode", [ //$NON-NLS-0$
 				contentAssist.offset = undefined;
 				this.editor.reportStatus(messages.linkedModeExited, null, true);
 				if (escapePosition) {
-					editor.setCaretOffset(model.escapePosition, false);
+					textView.setCaretOffset(model.escapePosition, false);
 				}
 			}
 			this.selectLinkedGroup(0);
@@ -16119,19 +16069,19 @@ define("orion/editor/linkedMode", [ //$NON-NLS-0$
 				model.selectedGroupIndex = index;
 				var group = model.groups[index];
 				var position = group.positions[0];
-				var editor = this.editor;
-				editor.setSelection(position.offset, position.offset + position.length);
+				var textView = this.editor.getTextView();
+				textView.setSelection(position.offset, position.offset + position.length);
 				var contentAssist = this.contentAssist;
 				if (contentAssist) {
 					contentAssist.offset = undefined;
 					if (group.data && group.data.type === "link" && group.data.values) { //$NON-NLS-0$
 						var provider = this._groupContentAssistProvider = new mTemplates.TemplateContentAssist(group.data.values);
 						provider.getPrefix = function() {
-							var selection = editor.getSelection();
+							var selection = textView.getSelection();
 							if (selection.start === selection.end) {
-								var caretOffset = editor.getCaretOffset();
+								var caretOffset = textView.getCaretOffset();
 								if (position.offset <= caretOffset && caretOffset <= position.offset + position.length) {
-									return editor.getText(position.offset, caretOffset);
+									return textView.getText(position.offset, caretOffset);
 								}
 							}
 							return "";
@@ -16877,28 +16827,21 @@ define("orion/editor/contentAssist", [ //$NON-NLS-0$
 			// now handle prefixes
 			// if there is a non-empty selection, then replace it,
 			// if overwrite is truthy, then also replace the prefix
-			var view = this.textView;
-			var sel = view.getSelection();
-			var start = Math.min(sel.start, sel.end), mapStart = start;
-			var end = Math.max(sel.start, sel.end), mapEnd = end;
-			var model = view.getModel();
-			if (model.getBaseModel) {
-				mapStart = model.mapOffset(mapStart);
-				mapEnd = model.mapOffset(mapEnd);
-				model = model.getBaseModel();
-			}
+			var sel = this.textView.getSelection();
+			var start = Math.min(sel.start, sel.end);
+			var end = Math.max(sel.start, sel.end);
 			if (proposal.overwrite) {
-				start = this.getPrefixStart(model, mapStart);
+				start = this.getPrefixStart(start);
 			}
 
 			var data = {
 				proposal: proposal,
-				start: mapStart,
-				end: mapEnd
+				start: start,
+				end: end
 			};
 			this.setState(State.INACTIVE);
 			var proposalText = typeof proposal === "string" ? proposal : proposal.proposal; //$NON-NLS-0$
-			view.setText(proposalText, start, end);
+			this.textView.setText(proposalText, start, end);
 			this.dispatchEvent({type: "ProposalApplied", data: data}); //$NON-NLS-0$
 			return true;
 		},
@@ -16976,9 +16919,9 @@ define("orion/editor/contentAssist", [ //$NON-NLS-0$
 			});
 		},
 		/** @private */
-		getPrefixStart: function(model, end) {
+		getPrefixStart: function(end) {
 			var index = end;
-			while (index > 0 && /[A-Za-z0-9_]/.test(model.getText(index - 1, index))) {
+			while (index > 0 && /[A-Za-z0-9_]/.test(this.textView.getText(index - 1, index))) {
 				index--;
 			}
 			return index;
@@ -16997,17 +16940,9 @@ define("orion/editor/contentAssist", [ //$NON-NLS-0$
 		 */
 		_computeProposals: function(offset) {
 			var providers = this.providers;
-			var textView = this.textView;
-			var sel = textView.getSelection();
-			var model = textView.getModel(), mapOffset = offset;
-			if (model.getBaseModel) {
-				mapOffset = model.mapOffset(mapOffset);
-				sel.start = model.mapOffset(sel.start);
-				sel.end = model.mapOffset(sel.end);
-				model = model.getBaseModel();
-			}
-			var buffer = model.getText();
-			var line = model.getLine(model.getLineAtOffset(mapOffset));
+			var textView = this.textView, textModel = textView.getModel();
+			var buffer = textView.getText();
+			var line = textModel.getLine(textModel.getLineAtOffset(offset));
 			var index = 0;
 			while (index < line.length && /\s/.test(line.charAt(index))) {
 				index++;
@@ -17017,9 +16952,9 @@ define("orion/editor/contentAssist", [ //$NON-NLS-0$
 			var tab = options.expandTab ? new Array(options.tabSize + 1).join(" ") : "\t"; //$NON-NLS-1$ //$NON-NLS-0$
 			var context = {
 				line: line,
-				prefix: model.getText(this.getPrefixStart(model, mapOffset), mapOffset),
-				selection: sel,
-				delimiter: model.getLineDelimiter(),
+				prefix: textView.getText(this.getPrefixStart(offset), offset),
+				selection: textView.getSelection(),
+				delimiter: textModel.getLineDelimiter(),
 				tab: tab,
 				indentation: indentation
 			};
@@ -17030,8 +16965,7 @@ define("orion/editor/contentAssist", [ //$NON-NLS-0$
 				var proposals;
 				try {
 					if (typeof func === "function") { //$NON-NLS-0$
-						var def = func.apply(provider, [buffer, mapOffset, context]);
-						proposals = self.progress ? self.progress.progress(def, "Generating content assist proposal") : def;
+						proposals = self.progress ? self.progress.progress(func.apply(provider, [buffer, offset, context]), "Generating content assist proposal"): func.apply(provider, [buffer, offset, context]);
 					}
 				} catch (e) {
 					self.handleError(e);
@@ -17236,8 +17170,7 @@ define("orion/editor/contentAssist", [ //$NON-NLS-0$
 		var self = this;
 		this.textViewListener = {
 			onMouseDown: function(event) {
-				var target = event.event.target || event.event.srcElement;
-				if (target.parentElement !== self.parentNode) {
+				if (event.event.target.parentElement !== self.parentNode) {
 					self.contentAssist.deactivate();
 				}
 				// ignore the event if this is a click inside of the parentNode
@@ -17429,19 +17362,9 @@ define("orion/editor/contentAssist", [ //$NON-NLS-0$
 		},
 		position: function() {
 			var contentAssist = this.contentAssist;
-			var offset;
-			var view = this.textView;
-			if (contentAssist.offset !== undefined) {
-				offset = contentAssist.offset;
-				var model = view.getModel();
-				if (model.getBaseModel) {
-					offset = model.mapOffset(offset, true);
-				}
-			} else {
-				offset = this.textView.getCaretOffset();
-			}
-			var caretLocation = view.getLocationAtOffset(offset);
-			caretLocation.y += view.getLineHeight();
+			var offset = contentAssist.offset !== undefined ? contentAssist.offset : this.textView.getCaretOffset();
+			var caretLocation = this.textView.getLocationAtOffset(offset);
+			caretLocation.y += this.textView.getLineHeight();
 			this.textView.convert(caretLocation, "document", "page"); //$NON-NLS-1$ //$NON-NLS-0$
 			this.parentNode.style.position = "fixed"; //$NON-NLS-0$
 			this.parentNode.style.left = caretLocation.x + "px"; //$NON-NLS-0$
@@ -18307,7 +18230,7 @@ define("orion/editor/AsyncStyler", ['i18n!orion/editor/nls/messages', 'orion/edi
 			var min = Number.MAX_VALUE, max = -1;
 			var model = this.textView.getModel();
 			for (var lineIndex in style) {
-				if (Object.prototype.hasOwnProperty.call(style, lineIndex)) {
+				if (style.hasOwnProperty(lineIndex)) {
 					this.lineStyles[lineIndex] = style[lineIndex];
 					min = Math.min(min, lineIndex);
 					max = Math.max(max, lineIndex);
@@ -22124,16 +22047,7 @@ define('orion/editor/edit', [ //$NON-NLS-0$
 			if (ruler && options.firstLineIndex !== undefined) {
 				ruler.setFirstLine(options.firstLineIndex);
 			}
-			var sourceCodeActions = editor.getSourceCodeActions();
-			if (sourceCodeActions) {
-				sourceCodeActions.setAutoPairParentheses(options.autoPairParentheses);
-				sourceCodeActions.setAutoPairBraces(options.autoPairBraces);
-				sourceCodeActions.setAutoPairSquareBrackets(options.autoPairSquareBrackets);
-				sourceCodeActions.setAutoPairAngleBrackets(options.autoPairAngleBrackets);
-				sourceCodeActions.setAutoPairQuotations(options.autoPairQuotations);
-				sourceCodeActions.setAutoCompleteComments(options.autoCompleteComments);
-				sourceCodeActions.setSmartIndentation(options.smartIndentation);
-			}
+			editor.getSourceCodeActions().setAutoPairing(options.autoPairing);
 		});
 		
 		var contents = options.contents;
