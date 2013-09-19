@@ -4,7 +4,7 @@ Bundle-Localization: plugin
 Bundle-Vendor: %providerName
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.e4.tools.orion.editor;singleton:=true
-Bundle-Version: 0.16.0.qualifier
+Bundle-Version: 0.15.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.osgi.framework
 Require-Bundle: org.eclipse.swt;resolution:=optional,
