@@ -1,6 +1,6 @@
 <%@ jet package="org.eclipse.e4.tools.orion.editor.builder" class="HTMLEditor" %>
 <% EditorOptions options = (EditorOptions)argument; %>
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -28,7 +28,7 @@ pre {
 	function setOrionEditor(editor) {
 	  window.editor = editor;
 	  if (typeof orion_onLoad == 'function') orion_onLoad();
-	}	
+	}
 </script>
 
 <% for (String script : options.getScripts()) { %>

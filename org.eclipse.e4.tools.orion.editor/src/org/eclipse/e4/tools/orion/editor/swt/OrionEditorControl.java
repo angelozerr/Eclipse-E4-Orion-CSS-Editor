@@ -10,10 +10,8 @@
  *******************************************************************************/
 package org.eclipse.e4.tools.orion.editor.swt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.e4.tools.orion.editor.builder.IHTMLBuilder;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
@@ -41,7 +39,7 @@ public class OrionEditorControl extends Composite {
 	/**
 	 * Dirty listener.
 	 */
-	private List<IDirtyListener> listeners = null;
+	private ListenerList dirtyListeners;
 
 	/**
 	 * Text to set for Orion the editor although the editor is not loaded.
@@ -238,11 +236,15 @@ public class OrionEditorControl extends Composite {
 	 * @param listener
 	 *            dirty listener to add.
 	 */
-	public void addDirtyListener(IDirtyListener listener) {
-		if (listeners == null) {
-			listeners = new ArrayList<IDirtyListener>();
+	public void addDirtyListener(IDirtyListener dirtyListener) {
+		if (dirtyListener == null) {
+			throw new NullPointerException("Cannot add a null dirty listener"); //$NON-NLS-1$
 		}
-		listeners.add(listener);
+		if (dirtyListeners == null) {
+			dirtyListeners = new ListenerList(ListenerList.IDENTITY);
+		}
+		dirtyListeners.add(dirtyListener);
+
 	}
 
 	/**
@@ -251,9 +253,17 @@ public class OrionEditorControl extends Composite {
 	 * @param listener
 	 *            dirty listener to remove.
 	 */
-	public void removeDirtyListener(IDirtyListener listener) {
-		if (listeners != null) {
-			listeners.remove(listener);
+	public void removeDirtyListener(IDirtyListener dirtyListener) {
+		if (dirtyListener == null) {
+			throw new NullPointerException(
+					"Cannot remove a null dirty listener"); //$NON-NLS-1$
+		}
+
+		if (dirtyListeners != null) {
+			dirtyListeners.remove(dirtyListener);
+			if (dirtyListeners.isEmpty()) {
+				dirtyListeners = null;
+			}
 		}
 	}
 
@@ -261,14 +271,16 @@ public class OrionEditorControl extends Composite {
 	 * Notify dirty listeners if need.
 	 */
 	private void notifyDirtyListeners() {
-		if (listeners == null) {
+		if (dirtyListeners == null) {
 			return;
 		}
 		Display.getCurrent().asyncExec(new Runnable() {
 			public void run() {
 				boolean dirty = isDirty();
-				for (IDirtyListener listener : listeners) {
-					listener.dirtyChanged(dirty);
+				final Object[] listeners = dirtyListeners.getListeners();
+				for (int i = 0; i < listeners.length; i++) {
+					IDirtyListener dirtyListener = (IDirtyListener) listeners[i];
+					dirtyListener.dirtyChanged(dirty);
 				}
 			}
 		});

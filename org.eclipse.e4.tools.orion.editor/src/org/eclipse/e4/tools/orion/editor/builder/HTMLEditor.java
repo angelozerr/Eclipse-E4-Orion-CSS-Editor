@@ -12,9 +12,9 @@ public class HTMLEditor
   }
 
   public final String NL = nl == null ? (System.getProperties().getProperty("line.separator")) : nl;
-  protected final String TEXT_1 = "<!DOCTYPE html> " + NL + "<html>" + NL + "<head>" + NL + "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />" + NL + "<title>Theme CSS editor</title>" + NL + "<style>" + NL + "#editor {" + NL + "\t//border: 1px solid teal;" + NL + "\tposition: absolute;" + NL + "\ttop: 0px;" + NL + "\tleft: 0px;" + NL + "\tbottom: 0px;" + NL + "\tright: 0px;" + NL + "\t//margin: 20px;" + NL + "\tmargin: 0px;" + NL + "}" + NL + "" + NL + "pre {" + NL + "\tmargin: 0px;" + NL + "}" + NL + "</style>" + NL + "<link rel=\"stylesheet\" type=\"text/css\" href=\"";
+  protected final String TEXT_1 = "<!DOCTYPE html>" + NL + "<html>" + NL + "<head>" + NL + "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />" + NL + "<title>Theme CSS editor</title>" + NL + "<style>" + NL + "#editor {" + NL + "\t//border: 1px solid teal;" + NL + "\tposition: absolute;" + NL + "\ttop: 0px;" + NL + "\tleft: 0px;" + NL + "\tbottom: 0px;" + NL + "\tright: 0px;" + NL + "\t//margin: 20px;" + NL + "\tmargin: 0px;" + NL + "}" + NL + "" + NL + "pre {" + NL + "\tmargin: 0px;" + NL + "}" + NL + "</style>" + NL + "<link rel=\"stylesheet\" type=\"text/css\" href=\"";
   protected final String TEXT_2 = "\"/>" + NL + "<script src=\"";
-  protected final String TEXT_3 = "\"></script>" + NL + "" + NL + "<script>" + NL + "\tfunction setOrionEditor(editor) {" + NL + "\t  window.editor = editor;" + NL + "\t  if (typeof orion_onLoad == 'function') orion_onLoad();" + NL + "\t}\t" + NL + "</script>" + NL;
+  protected final String TEXT_3 = "\"></script>" + NL + "" + NL + "<script>" + NL + "\tfunction setOrionEditor(editor) {" + NL + "\t  window.editor = editor;" + NL + "\t  if (typeof orion_onLoad == 'function') orion_onLoad();" + NL + "\t}" + NL + "</script>" + NL;
   protected final String TEXT_4 = NL + "<script>";
   protected final String TEXT_5 = NL;
   protected final String TEXT_6 = NL + "</script>";
